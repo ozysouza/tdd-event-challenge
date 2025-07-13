@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.devsuperior.bds02.dto.CityDTO;
@@ -29,6 +30,11 @@ public class CityService {
         City city = new City(cityDTO.getId(), cityDTO.getName());
         city = cityRepository.save(city);
         return new CityDTO(city);
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public void delete(Long id) {
+        cityRepository.deleteById(id);
     }
 
 }
