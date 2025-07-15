@@ -9,6 +9,9 @@ import com.devsuperior.bds02.entities.City;
 import com.devsuperior.bds02.entities.Event;
 import com.devsuperior.bds02.repository.CityRepository;
 import com.devsuperior.bds02.repository.EventRepository;
+import com.devsuperior.bds02.services.exceptions.ResourceNotFoundException;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class EventService {
@@ -21,15 +24,19 @@ public class EventService {
 
     @Transactional
     public EventDTO update(Long id, EventDTO eventDTO) {
-        Event event = eventRepository.getReferenceById(id);
-        event.setName(eventDTO.getName());
-        event.setDate(eventDTO.getDate());
-        event.setUrl(eventDTO.getUrl());
+        try {
+            Event event = eventRepository.getReferenceById(id);
+            event.setName(eventDTO.getName());
+            event.setDate(eventDTO.getDate());
+            event.setUrl(eventDTO.getUrl());
 
-        City city = cityRepository.getReferenceById(eventDTO.getCityId());
-        event.setCity(city);
+            City city = cityRepository.getReferenceById(eventDTO.getCityId());
+            event.setCity(city);
 
-        return new EventDTO(event);
+            return new EventDTO(event);
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException("Resource with ID " + eventDTO.getId() + "was not found");
+        }
     }
 
 }
